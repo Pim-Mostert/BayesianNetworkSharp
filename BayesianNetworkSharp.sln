@@ -1,0 +1,44 @@
+﻿Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BayesianNetwork", "src\BayesianNetwork\BayesianNetwork.csproj", "{83B78D0C-FC2A-4FF8-9E8C-519B5BD933EB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BayesianNetwork.Inference.Abstractions", "src\BayesianNetwork.Inference.Abstractions\BayesianNetwork.Inference.Abstractions.csproj", "{7D21F9D6-208D-4EE0-92FE-C96CE9B81DB2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BayesianNetwork.Inference.Naive", "src\BayesianNetwork.Inference.Naive\BayesianNetwork.Inference.Naive.csproj", "{EAB400B5-CCD8-46EC-96A3-EDB839B75E16}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{D18852CB-DF4D-4FD8-8FDE-DA297068E59E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BayesianNetwork.Inference.Naive.Test", "test\BayesianNetwork.Inference.Naive.Test\BayesianNetwork.Inference.Naive.Test.csproj", "{C801225E-63ED-4B84-AAE3-B318037F810D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{83B78D0C-FC2A-4FF8-9E8C-519B5BD933EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{83B78D0C-FC2A-4FF8-9E8C-519B5BD933EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{83B78D0C-FC2A-4FF8-9E8C-519B5BD933EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{83B78D0C-FC2A-4FF8-9E8C-519B5BD933EB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7D21F9D6-208D-4EE0-92FE-C96CE9B81DB2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7D21F9D6-208D-4EE0-92FE-C96CE9B81DB2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7D21F9D6-208D-4EE0-92FE-C96CE9B81DB2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7D21F9D6-208D-4EE0-92FE-C96CE9B81DB2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EAB400B5-CCD8-46EC-96A3-EDB839B75E16}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EAB400B5-CCD8-46EC-96A3-EDB839B75E16}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EAB400B5-CCD8-46EC-96A3-EDB839B75E16}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EAB400B5-CCD8-46EC-96A3-EDB839B75E16}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C801225E-63ED-4B84-AAE3-B318037F810D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C801225E-63ED-4B84-AAE3-B318037F810D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C801225E-63ED-4B84-AAE3-B318037F810D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C801225E-63ED-4B84-AAE3-B318037F810D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{C801225E-63ED-4B84-AAE3-B318037F810D} = {D18852CB-DF4D-4FD8-8FDE-DA297068E59E}
+	EndGlobalSection
+EndGlobal
