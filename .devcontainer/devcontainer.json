@@ -8,5 +8,12 @@
     "remoteEnv": {
         "DOTNET_MULTILEVEL_LOOKUP": "0",
         "TARGET": "net8.0"
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-dotnettools.csdevkit"
+            ]
+        }
     }
 }
