@@ -1,0 +1,12 @@
+{
+    "name": "BayesianNetworkSharp in Codespaces",
+    "image": "mcr.microsoft.com/dotnet/sdk:8.0",
+    "hostRequirements": {
+        "memory": "4gb",
+        "cpus": 2
+    },
+    "remoteEnv": {
+        "DOTNET_MULTILEVEL_LOOKUP": "0",
+        "TARGET": "net8.0"
+    }
+}
