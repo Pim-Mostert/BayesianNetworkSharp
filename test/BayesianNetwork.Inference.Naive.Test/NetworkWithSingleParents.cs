@@ -1,5 +1,6 @@
 using BayesianNetwork.Inference.Abstractions;
 using TorchSharp;
+using static TorchSharp.torch;
 
 namespace BayesianNetwork.Inference.Naive;
 
@@ -45,29 +46,22 @@ public class NetworkWithSingleParents
     public void InferSingleNode_NoObservations_CorrectInference()
     {
         // Assign
-        var p_Q1_expected = torch.einsum("i->i", _Q1.Cpt);
-        var p_Q2_expected = torch.einsum("i, ij->j", _Q1.Cpt, _Q2.Cpt);
-        var p_Y_expected = torch.einsum("i, ij, jk->k", _Q1.Cpt, _Q2.Cpt, _Y.Cpt);
+        Tensor pQ1_expected = torch.einsum("i->i", _Q1.Cpt);
+        Tensor pQ2_expected = torch.einsum("i, ij->j", _Q1.Cpt, _Q2.Cpt);
+        Tensor pY_expected = torch.einsum("i, ij, jk->k", _Q1.Cpt, _Q2.Cpt, _Y.Cpt);
 
         // Act
+        Tensor pQ1_actual = _sut.Infer(_Q1);
+        Tensor pQ2_actual = _sut.Infer(_Q2);
+        Tensor pY_actual = _sut.Infer(_Y);
 
-        // # Assign
-        // p_Q1_expected = torch.einsum('i->i', self.Q1.cpt)[None, ...]
-        // p_Q2_expected = torch.einsum('i, ij->j', self.Q1.cpt, self.Q2.cpt)[None, ...]
-        // p_Y_expected = torch.einsum('i, ij, jk->k', self.Q1.cpt, self.Q2.cpt, self.Y.cpt)[None, ...]
-
-        // # Act
-        // sut = self.create_inference_machine(
-        //     bayesian_network=self.network,
-        //     observed_nodes=[self.Q2],
-        //     num_observations=0)
-
-        // [p_Q1_actual, p_Q2_actual, p_Y_actual] = sut.infer_single_nodes([self.Q1, self.Q2, self.Y])
-
-        // # Assert
-        // self.assertArrayAlmostEqual(p_Q1_actual, p_Q1_expected)
-        // self.assertArrayAlmostEqual(p_Q2_actual, p_Q2_expected)
-        // self.assertArrayAlmostEqual(p_Y_actual, p_Y_expected)
+        // Assert
+        Assert.Multiple(() =>
+        {
+            Assert.That(pQ1_actual, Is.EqualTo(pQ1_expected).Within(1e-5));
+            Assert.That(pQ2_actual, Is.EqualTo(pQ2_expected).Within(1e-5));
+            Assert.That(pY_actual, Is.EqualTo(pY_expected).Within(1e-5));
+        });
     }
 
     private static torch.Tensor GenerateRandomProbabilityMatrix(long[] size)

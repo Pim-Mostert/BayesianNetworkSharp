@@ -3,7 +3,7 @@ namespace BayesianNetwork;
 public class BayesianNetworkBuilder
 {
     private ISet<Node> _nodes { get; init; } = new HashSet<Node>();
-    private IDictionary<Node, Node> _parents { get; init; } = new Dictionary<Node, Node>();
+    private Dictionary<Node, IEnumerable<Node>> _parents { get; init; } = [];
 
     private bool _hasRootNode = false;
 
@@ -17,6 +17,8 @@ public class BayesianNetworkBuilder
 
         _hasRootNode = true;
 
+        _parents[node] = [];
+
         return this;
     }
 
@@ -28,7 +30,7 @@ public class BayesianNetworkBuilder
         if (!_nodes.Add(node))
             throw new InvalidOperationException($"Node {node} was already added");
 
-        _parents[node] = parent;
+        _parents[node] = [parent];
 
         return this;
     }
