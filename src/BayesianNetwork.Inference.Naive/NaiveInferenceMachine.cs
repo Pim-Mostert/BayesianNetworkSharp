@@ -7,13 +7,13 @@ namespace BayesianNetwork.Inference.Naive;
 public class NaiveInferenceMachine : IInferenceMachine
 {
     private readonly BayesianNetwork _bayesianNetwork;
-    private readonly IDictionary<Node, int> _nodesWithIndex;
+    private readonly IDictionary<Node, int> _nodeIndex;
     private readonly Tensor _pComplete;
 
     public NaiveInferenceMachine(BayesianNetwork bayesianNetwork)
     {
         _bayesianNetwork = bayesianNetwork;
-        _nodesWithIndex = _bayesianNetwork
+        _nodeIndex = _bayesianNetwork
             .Nodes
             .Select((n, i) => (Node: n, Index: i))
             .ToDictionary(
@@ -23,14 +23,22 @@ public class NaiveInferenceMachine : IInferenceMachine
         _pComplete = CalculatePComplete();
     }
 
-    public Tensor Infer(Node node)
+    public Tensor Infer(Node node, bool includeParents = false)
     {
-        return Infer(new List<Node>([node]));
+        if (includeParents)
+        {
+            var parents = _bayesianNetwork.Parents[node];
+            return Infer([.. parents, node]);
+        }
+        else
+        {
+            return Infer([node]);
+        }
     }
 
     private Tensor Infer(IList<Node> nodes)
     {
-        var nodeIndices = nodes.Select(n => _nodesWithIndex[n]).ToHashSet();
+        var nodeIndices = nodes.Select(n => _nodeIndex[n]).ToHashSet();
         long[] dimsToSumOver = Enumerable.Range(0, _bayesianNetwork.Nodes.Count)
             .Where(i => !nodeIndices.Contains(i))
             .Select(i => (long)i)
@@ -41,20 +49,21 @@ public class NaiveInferenceMachine : IInferenceMachine
 
     private Tensor CalculatePComplete()
     {
-        long[] allDimensions = _nodesWithIndex.Keys
+        long[] allDimensions = _bayesianNetwork
+            .Nodes
             .Select(n => n.NumStates)
             .ToArray();
 
         Tensor pComplete = torch.ones(allDimensions);
 
-        foreach ((Node? node, int index) in _nodesWithIndex)
+        foreach (Node node in _bayesianNetwork.Nodes)
         {
-            long[] newShape = Enumerable.Repeat<long>(1, _nodesWithIndex.Count).ToArray();
-            newShape[index] = node.NumStates;
+            long[] newShape = Enumerable.Repeat<long>(1, _bayesianNetwork.NumNodes).ToArray();
+            newShape[_nodeIndex[node]] = node.NumStates;
 
             foreach (var parent in _bayesianNetwork.Parents[node])
             {
-                newShape[_nodesWithIndex[parent]] = parent.NumStates;
+                newShape[_nodeIndex[parent]] = parent.NumStates;
             }
 
             pComplete *= node.Cpt.reshape(newShape);

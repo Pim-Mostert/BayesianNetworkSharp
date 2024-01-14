@@ -4,5 +4,5 @@ namespace BayesianNetwork.Inference.Abstractions;
 
 public interface IInferenceMachine
 {
-    Tensor Infer(Node node);
+    Tensor Infer(Node node, bool includeParents = false);
 }

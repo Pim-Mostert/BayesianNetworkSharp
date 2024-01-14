@@ -6,13 +6,13 @@ namespace BayesianNetwork.Inference.Naive;
 
 public class NetworkWithSingleParents
 {
-    private Node _Q1 { get; set; }
-    private Node _Q2 { get; set; }
-    private Node _Y { get; set; }
+    private Node _Q1;
+    private Node _Q2;
+    private Node _Y;
 
-    private BayesianNetwork _bayesianNetwork { get; set; }
+    private BayesianNetwork _bayesianNetwork;
 
-    private IInferenceMachine _sut { get; set; }
+    private IInferenceMachine _sut;
 
     [SetUp]
     public void Setup()
@@ -58,10 +58,37 @@ public class NetworkWithSingleParents
         // Assert
         Assert.Multiple(() =>
         {
-            Assert.That(pQ1_actual, Is.EqualTo(pQ1_expected).Within(1e-5));
-            Assert.That(pQ2_actual, Is.EqualTo(pQ2_expected).Within(1e-5));
-            Assert.That(pY_actual, Is.EqualTo(pY_expected).Within(1e-5));
+            AssertTensorEqual(pQ1_expected, pQ1_actual);
+            AssertTensorEqual(pQ2_expected, pQ2_actual);
+            AssertTensorEqual(pY_expected, pY_actual);
         });
+    }
+
+    [Test]
+    public void InferSingleNodeWithParents_NoObservations_CorrectInference()
+    {
+        // Assign
+        Tensor pQ1xQ2_expected = torch.einsum("i, ij->ij", _Q1.Cpt, _Q2.Cpt);
+        Tensor pQ2xY_expected = torch.einsum("i, ij, jk->jk", _Q1.Cpt, _Q2.Cpt, _Y.Cpt);
+
+        // Act
+        Tensor pQ1xQ2_actual = _sut.Infer(_Q2, includeParents: true);
+        Tensor pQ2xY_actual = _sut.Infer(_Y, includeParents: true);
+
+        // Assert
+        Assert.Multiple(() =>
+        {
+            AssertTensorEqual(pQ1xQ2_expected, pQ1xQ2_actual);
+            AssertTensorEqual(pQ2xY_expected, pQ2xY_actual);
+        });
+    }
+
+    private static void AssertTensorEqual(Tensor expected, Tensor actual, double tolerance = 1e-5)
+    {
+        var expectedArray = expected.data<float>().ToArray();
+        var actualArray = actual.data<float>().ToArray();
+
+        Assert.That(expectedArray, Is.EqualTo(actualArray).Within(tolerance));
     }
 
     private static torch.Tensor GenerateRandomProbabilityMatrix(long[] size)

@@ -2,8 +2,8 @@ namespace BayesianNetwork;
 
 public class BayesianNetworkBuilder
 {
-    private ISet<Node> _nodes { get; init; } = new HashSet<Node>();
-    private Dictionary<Node, IEnumerable<Node>> _parents { get; init; } = [];
+    private readonly HashSet<Node> _nodes = [];
+    private readonly Dictionary<Node, IList<Node>> _parents = [];
 
     private bool _hasRootNode = false;
 
@@ -37,6 +37,6 @@ public class BayesianNetworkBuilder
 
     public BayesianNetwork Build()
     {
-        return new BayesianNetwork(_nodes, _parents);
+        return new BayesianNetwork(_nodes.ToList(), _parents);
     }
 }
