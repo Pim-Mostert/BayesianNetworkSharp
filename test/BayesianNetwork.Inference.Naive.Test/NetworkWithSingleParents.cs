@@ -83,6 +83,40 @@ public class NetworkWithSingleParents
         });
     }
 
+    // def test_all_observed_single_nodes(self):
+    //     # Assign
+    //     device = self.get_torch_settings().device
+    //     dtype = self.get_torch_settings().dtype
+
+    //     evidence = rescale_tensors([
+    //         torch.tensor([[1, 0], [1, 0]], device=device, dtype=dtype),
+    //         torch.tensor([[1, 0], [0, 1]], device=device, dtype=dtype),
+    //         torch.tensor([[1, 0], [0, 1]], device=device, dtype=dtype),
+    //     ])
+    //     num_observations = evidence[0].shape[0]
+
+    //     p_Q1_expected = torch.einsum('i, ij, jk, ni, nj, nk->ni', self.Q1.cpt, self.Q2.cpt, self.Y.cpt, *evidence)
+    //     p_Q1_expected /= p_Q1_expected.sum(axis=(1), keepdims=True)
+    //     p_Q2_expected = torch.einsum('i, ij, jk, ni, nj, nk->nj', self.Q1.cpt, self.Q2.cpt, self.Y.cpt, *evidence)
+    //     p_Q2_expected /= p_Q2_expected.sum(axis=(1), keepdims=True)
+    //     p_Y_expected = torch.einsum('i, ij, jk, ni, nj, nk->nk', self.Q1.cpt, self.Q2.cpt, self.Y.cpt, *evidence)
+    //     p_Y_expected /= p_Y_expected.sum(axis=(1), keepdims=True)
+
+    //     # Act
+    //     sut = self.create_inference_machine(
+    //         bayesian_network=self.network,
+    //         observed_nodes=[self.Q1, self.Q2, self.Y],
+    //         num_observations=num_observations)
+
+    //     sut.enter_evidence(evidence)
+
+    //     [p_Q1_actual, p_Q2_actual, p_Y_actual] = sut.infer_single_nodes([self.Q1, self.Q2, self.Y])
+
+    //     # Assert
+    //     self.assertArrayAlmostEqual(p_Q1_actual, p_Q1_expected)
+    //     self.assertArrayAlmostEqual(p_Q2_actual, p_Q2_expected)
+    //     self.assertArrayAlmostEqual(p_Y_actual, p_Y_expected)
+
     private static void AssertTensorEqual(Tensor expected, Tensor actual, double tolerance = 1e-5)
     {
         var expectedArray = expected.data<float>().ToArray();

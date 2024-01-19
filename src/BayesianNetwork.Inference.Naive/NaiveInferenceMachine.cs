@@ -1,4 +1,5 @@
-﻿using BayesianNetwork.Inference.Abstractions;
+﻿using System.Collections.Generic;
+using BayesianNetwork.Inference.Abstractions;
 using TorchSharp;
 using static TorchSharp.torch;
 
@@ -7,12 +8,21 @@ namespace BayesianNetwork.Inference.Naive;
 public class NaiveInferenceMachine : IInferenceMachine
 {
     private readonly BayesianNetwork _bayesianNetwork;
-    private readonly IDictionary<Node, int> _nodeIndex;
-    private readonly Tensor _pComplete;
+    private readonly ISet<Node> _observedNodes;
 
-    public NaiveInferenceMachine(BayesianNetwork bayesianNetwork)
+    private readonly IDictionary<Node, int> _nodeIndex;
+
+    private readonly Tensor _pPrior;
+    private Tensor _pPosterior;
+    private Tensor _pEvidence;
+    private double? _logLikelihood;
+
+    public NaiveInferenceMachine(
+        BayesianNetwork bayesianNetwork,
+        ISet<Node>? observedNodes = null)
     {
         _bayesianNetwork = bayesianNetwork;
+        _observedNodes = observedNodes ?? new HashSet<Node>();
         _nodeIndex = _bayesianNetwork
             .Nodes
             .Select((n, i) => (Node: n, Index: i))
@@ -20,7 +30,9 @@ public class NaiveInferenceMachine : IInferenceMachine
                 ni => ni.Node,
                 ni => ni.Index);
 
-        _pComplete = CalculatePComplete();
+        _pPrior = CalculatePComplete();
+        _pEvidence = torch.ones(_pPrior.shape);
+        _pPosterior = _pPrior;
     }
 
     public Tensor Infer(Node node, bool includeParents = false)
@@ -36,6 +48,40 @@ public class NaiveInferenceMachine : IInferenceMachine
         }
     }
 
+    public void EnterEvidence(Evidence evidence)
+    {
+        long[] allDimensions = _bayesianNetwork
+            .Nodes
+            .Select(n => n.NumStates)
+            .ToArray();
+
+        foreach (Node observedNode in _observedNodes)
+        {
+            long[] newShape = Enumerable.Repeat<long>(1, _bayesianNetwork.NumNodes).ToArray();
+            newShape[_nodeIndex[observedNode]] = observedNode.NumStates;
+
+            _pEvidence *= evidence[observedNode].reshape(newShape);
+        }
+
+        _pPosterior = _pPrior * _pEvidence;
+
+        var c = _pPosterior.sum();
+        _pPosterior /= c;
+
+        _logLikelihood = torch.log(c).item<double>();
+    }
+
+    public double LogLikelihood
+    {
+        get
+        {
+            if (!_logLikelihood.HasValue)
+                throw new InvalidOperationException("Evidence must be entered first");
+
+            return _logLikelihood.Value;
+        }
+    }
+
     private Tensor Infer(IList<Node> nodes)
     {
         var nodeIndices = nodes.Select(n => _nodeIndex[n]).ToHashSet();
@@ -44,7 +90,7 @@ public class NaiveInferenceMachine : IInferenceMachine
             .Select(i => (long)i)
             .ToArray();
 
-        return _pComplete.sum(dim: dimsToSumOver);
+        return _pPosterior.sum(dim: dimsToSumOver);
     }
 
     private Tensor CalculatePComplete()
