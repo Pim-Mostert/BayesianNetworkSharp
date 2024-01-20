@@ -59,6 +59,7 @@ public class SingleParents_AllObserved
             evidence.GetState(_Q1).AsTensor(),
             evidence.GetState(_Q2).AsTensor(),
             evidence.GetState(_Y).AsTensor());
+        pQ1_expected /= pQ1_expected.sum();
         Tensor pQ2_expected = torch.einsum("i, ij, jk, i, j, k->j",
             _Q1.Cpt,
             _Q2.Cpt,
@@ -66,6 +67,7 @@ public class SingleParents_AllObserved
             evidence.GetState(_Q1).AsTensor(),
             evidence.GetState(_Q2).AsTensor(),
             evidence.GetState(_Y).AsTensor());
+        pQ2_expected /= pQ2_expected.sum();
         Tensor pY_expected = torch.einsum("i, ij, jk, i, j, k->k",
             _Q1.Cpt,
             _Q2.Cpt,
@@ -73,6 +75,7 @@ public class SingleParents_AllObserved
             evidence.GetState(_Q1).AsTensor(),
             evidence.GetState(_Q2).AsTensor(),
             evidence.GetState(_Y).AsTensor());
+        pY_expected /= pY_expected.sum();
 
         // Act
         _sut.EnterEvidence(evidence);
@@ -84,9 +87,9 @@ public class SingleParents_AllObserved
         // Assert
         Assert.Multiple(() =>
         {
-            AssertTensorEqual(pQ1_expected, pQ1_actual);
-            AssertTensorEqual(pQ2_expected, pQ2_actual);
-            AssertTensorEqual(pY_expected, pY_actual);
+            AssertTensorEqual(pQ1_actual, pQ1_expected);
+            AssertTensorEqual(pQ2_actual, pQ2_expected);
+            AssertTensorEqual(pY_actual, pY_expected);
         });
     }
 
@@ -124,12 +127,12 @@ public class SingleParents_AllObserved
     //     self.assertArrayAlmostEqual(p_Q2_actual, p_Q2_expected)
     //     self.assertArrayAlmostEqual(p_Y_actual, p_Y_expected)
 
-    private static void AssertTensorEqual(Tensor expected, Tensor actual, double tolerance = 1e-5)
+    private static void AssertTensorEqual(Tensor actual, Tensor expected, double tolerance = 1e-5)
     {
-        var expectedArray = expected.data<double>().ToArray();
         var actualArray = actual.data<double>().ToArray();
+        var expectedArray = expected.data<double>().ToArray();
 
-        Assert.That(expectedArray, Is.EqualTo(actualArray).Within(tolerance));
+        Assert.That(actualArray, Is.EqualTo(expectedArray).Within(tolerance));
     }
 
     private static torch.Tensor GenerateRandomProbabilityMatrix(long[] size)

@@ -8,7 +8,6 @@ namespace BayesianNetwork.Inference.Naive;
 public class NaiveInferenceMachine : IInferenceMachine
 {
     private readonly BayesianNetwork _bayesianNetwork;
-    private readonly ISet<Node> _observedNodes;
 
     private readonly IDictionary<Node, int> _nodeIndex;
 
@@ -18,11 +17,9 @@ public class NaiveInferenceMachine : IInferenceMachine
     private double? _logLikelihood;
 
     public NaiveInferenceMachine(
-        BayesianNetwork bayesianNetwork,
-        ISet<Node>? observedNodes = null)
+        BayesianNetwork bayesianNetwork)
     {
         _bayesianNetwork = bayesianNetwork;
-        _observedNodes = observedNodes ?? new HashSet<Node>();
         _nodeIndex = _bayesianNetwork
             .Nodes
             .Select((n, i) => (Node: n, Index: i))
@@ -30,8 +27,8 @@ public class NaiveInferenceMachine : IInferenceMachine
                 ni => ni.Node,
                 ni => ni.Index);
 
-        _pPrior = CalculatePComplete();
-        _pEvidence = torch.ones(_pPrior.shape);
+        _pPrior = CalculatePPrior();
+        _pEvidence = torch.ones(_pPrior.shape, dtype: torch.float64);
         _pPosterior = _pPrior;
     }
 
@@ -55,7 +52,7 @@ public class NaiveInferenceMachine : IInferenceMachine
             .Select(n => n.NumStates)
             .ToArray();
 
-        foreach (Node observedNode in _observedNodes)
+        foreach (Node observedNode in _bayesianNetwork.ObservedNodes)
         {
             long[] newShape = Enumerable.Repeat<long>(1, _bayesianNetwork.NumNodes).ToArray();
             newShape[_nodeIndex[observedNode]] = observedNode.NumStates;
@@ -93,14 +90,14 @@ public class NaiveInferenceMachine : IInferenceMachine
         return _pPosterior.sum(dim: dimsToSumOver);
     }
 
-    private Tensor CalculatePComplete()
+    private Tensor CalculatePPrior()
     {
         long[] allDimensions = _bayesianNetwork
             .Nodes
             .Select(n => n.NumStates)
             .ToArray();
 
-        Tensor pComplete = torch.ones(allDimensions);
+        Tensor pPrior = torch.ones(allDimensions);
 
         foreach (Node node in _bayesianNetwork.Nodes)
         {
@@ -112,9 +109,11 @@ public class NaiveInferenceMachine : IInferenceMachine
                 newShape[_nodeIndex[parent]] = parent.NumStates;
             }
 
-            pComplete *= node.Cpt.reshape(newShape);
+            pPrior *= node.Cpt.reshape(newShape);
         }
 
-        return pComplete;
+        pPrior /= pPrior.sum();
+
+        return pPrior;
     }
 }
