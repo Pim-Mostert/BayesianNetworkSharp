@@ -1,9 +1,14 @@
-﻿namespace BayesianNetwork;
+﻿using System.Collections.Frozen;
 
-public class BayesianNetwork(IList<Node> nodes, IDictionary<Node, IList<Node>> parents)
+namespace BayesianNetwork;
+
+public class BayesianNetwork(ISet<Node> nodes, IDictionary<Node, ISet<Node>> parents)
 {
-    public IReadOnlyList<Node> Nodes { get; init; } = nodes.AsReadOnly();
-    public IDictionary<Node, IList<Node>> Parents { get; init; } = parents;
+    public IReadOnlySet<Node> Nodes { get; init; } = nodes.ToFrozenSet();
+    public IReadOnlyDictionary<Node, IReadOnlySet<Node>> Parents { get; init; } = parents
+        .ToFrozenDictionary(
+            kvp => kvp.Key,
+            kvp => (IReadOnlySet<Node>)kvp.Value.ToFrozenSet());
 
     public int NumNodes => Nodes.Count;
 }

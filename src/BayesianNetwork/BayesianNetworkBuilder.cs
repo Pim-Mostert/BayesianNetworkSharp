@@ -3,40 +3,35 @@ namespace BayesianNetwork;
 public class BayesianNetworkBuilder
 {
     private readonly HashSet<Node> _nodes = [];
-    private readonly Dictionary<Node, IList<Node>> _parents = [];
+    private readonly Dictionary<Node, ISet<Node>> _parents = [];
 
-    private bool _hasRootNode = false;
-
-    public BayesianNetworkBuilder AddRootNode(Node node)
+    public BayesianNetworkBuilder AddNode(Node node, Node? parent = null)
     {
-        if (_hasRootNode)
-            throw new InvalidOperationException($"A root node was already added");
-
-        if (!_nodes.Add(node))
-            throw new InvalidOperationException($"Node {node} was already added");
-
-        _hasRootNode = true;
-
-        _parents[node] = [];
-
-        return this;
+        return AddNode(
+            node,
+            parent is null ?
+                new HashSet<Node>()
+                : [parent]);
     }
 
-    public BayesianNetworkBuilder AddNode(Node node, Node parent)
+    public BayesianNetworkBuilder AddNode(Node node, ISet<Node> parents)
     {
-        if (!_nodes.Contains(parent))
-            throw new InvalidOperationException($"The parent node {parent} is not part of the bayesian network");
-
         if (!_nodes.Add(node))
             throw new InvalidOperationException($"Node {node} was already added");
 
-        _parents[node] = [parent];
+        if (!parents.IsSubsetOf(_nodes))
+            throw new InvalidOperationException("Parents should be part of the network");
+
+        _parents[node] = parents;
 
         return this;
     }
 
     public BayesianNetwork Build()
     {
-        return new BayesianNetwork(_nodes.ToList(), _parents);
+        if (!_parents.Values.All(x => x.IsSubsetOf(_nodes)))
+            throw new InvalidOperationException("All parent nodes should be part of the network");
+
+        return new BayesianNetwork(_nodes, _parents);
     }
 }
