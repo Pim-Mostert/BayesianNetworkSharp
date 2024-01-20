@@ -60,7 +60,7 @@ public class NaiveInferenceMachine : IInferenceMachine
             long[] newShape = Enumerable.Repeat<long>(1, _bayesianNetwork.NumNodes).ToArray();
             newShape[_nodeIndex[observedNode]] = observedNode.NumStates;
 
-            _pEvidence *= evidence[observedNode].reshape(newShape);
+            _pEvidence *= evidence.GetState(observedNode).AsTensor().reshape(newShape);
         }
 
         _pPosterior = _pPrior * _pEvidence;
