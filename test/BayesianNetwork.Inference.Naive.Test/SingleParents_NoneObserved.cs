@@ -19,17 +19,17 @@ public class SingleParents_NoneObserved
     {
         _Q1 = new Node
         {
-            Cpt = GenerateRandomProbabilityMatrix([2]),
+            Cpt = Helpers.GenerateRandomProbabilityMatrix([2]),
             Name = "Q1"
         };
         _Q2 = new Node
         {
-            Cpt = GenerateRandomProbabilityMatrix([2, 2]),
+            Cpt = Helpers.GenerateRandomProbabilityMatrix([2, 2]),
             Name = "Q2"
         };
         _Y = new Node
         {
-            Cpt = GenerateRandomProbabilityMatrix([2, 2]),
+            Cpt = Helpers.GenerateRandomProbabilityMatrix([2, 2]),
             Name = "Y"
         };
 
@@ -58,9 +58,9 @@ public class SingleParents_NoneObserved
         // Assert
         Assert.Multiple(() =>
         {
-            AssertTensorEqual(pQ1_expected, pQ1_actual);
-            AssertTensorEqual(pQ2_expected, pQ2_actual);
-            AssertTensorEqual(pY_expected, pY_actual);
+            Helpers.AssertTensorEqual(pQ1_expected, pQ1_actual);
+            Helpers.AssertTensorEqual(pQ2_expected, pQ2_actual);
+            Helpers.AssertTensorEqual(pY_expected, pY_actual);
         });
     }
 
@@ -78,23 +78,8 @@ public class SingleParents_NoneObserved
         // Assert
         Assert.Multiple(() =>
         {
-            AssertTensorEqual(pQ1xQ2_expected, pQ1xQ2_actual);
-            AssertTensorEqual(pQ2xY_expected, pQ2xY_actual);
+            Helpers.AssertTensorEqual(pQ1xQ2_expected, pQ1xQ2_actual);
+            Helpers.AssertTensorEqual(pQ2xY_expected, pQ2xY_actual);
         });
-    }
-
-    private static void AssertTensorEqual(Tensor expected, Tensor actual, double tolerance = 1e-5)
-    {
-        var expectedArray = expected.data<float>().ToArray();
-        var actualArray = actual.data<float>().ToArray();
-
-        Assert.That(expectedArray, Is.EqualTo(actualArray).Within(tolerance));
-    }
-
-    private static torch.Tensor GenerateRandomProbabilityMatrix(long[] size)
-    {
-        var p = torch.rand(size);
-
-        return p / p.sum(dim: -1, keepdim: true);
     }
 }
