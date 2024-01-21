@@ -85,7 +85,9 @@ public class NaiveInferenceMachine : IInferenceMachine
             .Select(i => (long)i)
             .ToArray();
 
-        return _pPosterior.sum(dim: dimsToSumOver);
+        return dimsToSumOver.Length == 0
+            ? _pPosterior
+            : _pPosterior.sum(dim: dimsToSumOver);
     }
 
     private Tensor CalculatePPrior()
