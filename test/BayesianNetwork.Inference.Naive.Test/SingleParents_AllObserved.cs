@@ -113,4 +113,37 @@ public class SingleParents_AllObserved
         // Assert
         Assert.That(actual, Is.EqualTo(expected).Within(1e-5));
     }
+
+    [Test]
+    public void InferSingleNodeWithParents_AllObserved_CorrectInference()
+    {
+        // Assign
+        Tensor pQ1xQ2_expected = torch.einsum("i, ij, jk, i, j, k->ij",
+            _Q1.Cpt,
+            _Q2.Cpt,
+            _Y.Cpt,
+            _evidence.GetState(_Q1).AsTensor(),
+            _evidence.GetState(_Q2).AsTensor(),
+            _evidence.GetState(_Y).AsTensor());
+        pQ1xQ2_expected /= pQ1xQ2_expected.sum();
+        Tensor pQ2xY_expected = torch.einsum("i, ij, jk, i, j, k->jk",
+            _Q1.Cpt,
+            _Q2.Cpt,
+            _Y.Cpt,
+            _evidence.GetState(_Q1).AsTensor(),
+            _evidence.GetState(_Q2).AsTensor(),
+            _evidence.GetState(_Y).AsTensor());
+        pQ2xY_expected /= pQ2xY_expected.sum();
+
+        // Act
+        Tensor pQ1xQ2_actual = _sut.Infer(_Q2, includeParents: true);
+        Tensor pQ2xY_actual = _sut.Infer(_Y);
+
+        // Assert
+        Assert.Multiple(() =>
+        {
+            Helpers.AssertTensorEqual(pQ1xQ2_actual, pQ1xQ2_expected);
+            Helpers.AssertTensorEqual(pQ2xY_actual, pQ2xY_expected);
+        });
+    }
 }
