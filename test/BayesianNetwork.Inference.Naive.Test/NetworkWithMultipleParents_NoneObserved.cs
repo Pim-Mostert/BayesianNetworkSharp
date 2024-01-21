@@ -47,17 +47,17 @@ public class NetworkWithMultipleParents_NoneObserved
     {
         // Assign
         Tensor pQ1xQ2_expected = torch.einsum("i, ij->ij", _Q1.Cpt, _Q2.Cpt);
-        Tensor pQ1xpQ2xY_expected = torch.einsum("i, ij, ijk->ijk", _Q1.Cpt, _Q2.Cpt, _Y.Cpt);
+        Tensor pQ1xQ2xY_expected = torch.einsum("i, ij, ijk->ijk", _Q1.Cpt, _Q2.Cpt, _Y.Cpt);
 
         // Act
         Tensor pQ1xQ2_actual = _sut.Infer(_Q2, includeParents: true);
-        Tensor pQ1xpQ2xY_actual = _sut.Infer(_Y, includeParents: true);
+        Tensor pQ1xQ2xY_actual = _sut.Infer(_Y, includeParents: true);
 
         // Assert
         Assert.Multiple(() =>
         {
             Helpers.AssertTensorEqual(pQ1xQ2_expected, pQ1xQ2_actual);
-            Helpers.AssertTensorEqual(pQ1xpQ2xY_expected, pQ1xpQ2xY_actual);
+            Helpers.AssertTensorEqual(pQ1xQ2xY_expected, pQ1xQ2xY_actual);
         });
     }
 }
