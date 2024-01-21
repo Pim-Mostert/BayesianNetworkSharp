@@ -6,47 +6,28 @@ namespace BayesianNetwork.Inference.Naive;
 
 public class NetworkWithSingleParents_AllObserved
 {
-    private Node _Q1;
-    private Node _Q2;
-    private Node _Y;
-
-    private BayesianNetwork _bayesianNetwork;
-
+    private Node _Q1, _Q2, _Y;
     private NaiveInferenceMachine _sut;
     private Evidence _evidence;
 
     [SetUp]
     public void Setup()
     {
-        _Q1 = new Node
-        {
-            Cpt = Helpers.GenerateRandomProbabilityMatrix([2]),
-            Name = "Q1"
-        };
-        _Q2 = new Node
-        {
-            Cpt = Helpers.GenerateRandomProbabilityMatrix([2, 2]),
-            Name = "Q2"
-        };
-        _Y = new Node
-        {
-            Cpt = Helpers.GenerateRandomProbabilityMatrix([2, 2]),
-            Name = "Y"
-        };
+        _Q1 = new Node(cpt: Helpers.GenerateRandomProbabilityMatrix([2]), name: "Q1", isObserved: true);
+        _Q2 = new Node(cpt: Helpers.GenerateRandomProbabilityMatrix([2, 2]), parents: [_Q1], name: "Q2", isObserved: true);
+        _Y = new Node(cpt: Helpers.GenerateRandomProbabilityMatrix([2, 2]), parents: [_Q2], name: "Y", isObserved: true);
 
-        _bayesianNetwork = new BayesianNetworkBuilder()
-            .AddObservedNode(_Q1)
-            .AddObservedNode(_Q2, parent: _Q1)
-            .AddObservedNode(_Y, parent: _Q2)
-            .Build();
+        BayesianNetwork bayesianNetwork = new(nodes: [_Q1, _Q2, _Y]);
 
-        _evidence = EvidenceBuilder.For(_bayesianNetwork)
+        _sut = new NaiveInferenceMachine(bayesianNetwork);
+
+        _evidence = EvidenceBuilder.For(bayesianNetwork)
             .SetState(_Q1, new State([1, 0]))
             .SetState(_Q2, new State([0, 1]))
             .SetState(_Y, new State([1, 0]))
             .Build();
 
-        _sut = new NaiveInferenceMachine(_bayesianNetwork);
+        _sut = new NaiveInferenceMachine(bayesianNetwork);
         _sut.EnterEvidence(_evidence);
     }
 

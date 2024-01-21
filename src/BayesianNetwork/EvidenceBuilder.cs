@@ -2,7 +2,7 @@ namespace BayesianNetwork;
 
 public class EvidenceBuilder
 {
-    private readonly IReadOnlySet<Node> _observedNodes;
+    private readonly IReadOnlyList<Node> _observedNodes;
     private readonly Dictionary<Node, State> _states = [];
 
     public static EvidenceBuilder For(BayesianNetwork bayesianNetwork) => new(bayesianNetwork);
@@ -30,7 +30,7 @@ public class EvidenceBuilder
 
     public Evidence Build()
     {
-        if (!_observedNodes.SetEquals(_states.Keys))
+        if (_observedNodes.Any(n => !_states.ContainsKey(n)))
             throw new InvalidOperationException("Not all observed nodes have a state set");
 
         return new Evidence(_states);

@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using BayesianNetwork.Inference.Abstractions;
+﻿using BayesianNetwork.Inference.Abstractions;
 using TorchSharp;
 using static TorchSharp.torch;
 
@@ -16,8 +15,7 @@ public class NaiveInferenceMachine : IInferenceMachine
     private Tensor _pEvidence;
     private double? _logLikelihood;
 
-    public NaiveInferenceMachine(
-        BayesianNetwork bayesianNetwork)
+    public NaiveInferenceMachine(BayesianNetwork bayesianNetwork)
     {
         _bayesianNetwork = bayesianNetwork;
         _nodeIndex = _bayesianNetwork
@@ -36,7 +34,7 @@ public class NaiveInferenceMachine : IInferenceMachine
     {
         if (includeParents)
         {
-            var parents = _bayesianNetwork.Parents[node];
+            var parents = node.Parents;
             return Infer([.. parents, node]);
         }
         else
@@ -104,7 +102,7 @@ public class NaiveInferenceMachine : IInferenceMachine
             long[] newShape = Enumerable.Repeat<long>(1, _bayesianNetwork.NumNodes).ToArray();
             newShape[_nodeIndex[node]] = node.NumStates;
 
-            foreach (var parent in _bayesianNetwork.Parents[node])
+            foreach (var parent in node.Parents)
             {
                 newShape[_nodeIndex[parent]] = parent.NumStates;
             }

@@ -1,19 +1,23 @@
-﻿using System.Collections.Frozen;
+﻿namespace BayesianNetwork;
 
-namespace BayesianNetwork;
-
-public class BayesianNetwork(
-    ISet<Node> nodes,
-    IDictionary<Node, ISet<Node>> parents,
-    ISet<Node>? observedNodes = null)
+public class BayesianNetwork
 {
-    public IReadOnlySet<Node> Nodes { get; init; } = nodes.ToFrozenSet();
-    public IReadOnlySet<Node> ObservedNodes { get; init; } =
-        (observedNodes ?? new HashSet<Node>()).ToFrozenSet();
-    public IReadOnlyDictionary<Node, IReadOnlySet<Node>> Parents { get; init; } = parents
-        .ToFrozenDictionary(
-            kvp => kvp.Key,
-            kvp => (IReadOnlySet<Node>)kvp.Value.ToFrozenSet());
+    public BayesianNetwork(IList<Node> nodes)
+    {
+        if (nodes.Count != nodes.Distinct().Count())
+            throw new ArgumentException("Nodes must be unique", nameof(nodes));
+
+        var allParents = nodes.SelectMany(n => n.Parents).Distinct();
+        if (allParents.Any(p => !nodes.Contains(p)))
+            throw new ArgumentException("Not all of the nodes' parents are nodes themselves", nameof(nodes));
+
+        Nodes = nodes.AsReadOnly();
+        ObservedNodes = Nodes.Where(n => n.IsObserved).ToList().AsReadOnly();
+    }
+
+    public IReadOnlyList<Node> Nodes { get; init; }
+    public IReadOnlyList<Node> ObservedNodes { get; init; }
 
     public int NumNodes => Nodes.Count;
+
 }
