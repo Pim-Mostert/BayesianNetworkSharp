@@ -12,6 +12,8 @@ public class ComplexNetworkWithSingleParents_SomeObserved
     [SetUp]
     public void Setup()
     {
+        torch.set_default_dtype(torch.float64);
+
         _Q1 = new Node(cpt: Helpers.GenerateRandomProbabilityMatrix([2]), name: "Q1");
         _Q2 = new Node(cpt: Helpers.GenerateRandomProbabilityMatrix([2, 3]), parents: [_Q1], name: "Q2");
         _Q3 = new Node(cpt: Helpers.GenerateRandomProbabilityMatrix([3, 2]), parents: [_Q2], name: "Q3");

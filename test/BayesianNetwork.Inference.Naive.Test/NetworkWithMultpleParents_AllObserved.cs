@@ -12,6 +12,8 @@ public class NetworkWithMultpleParents_AllObserved
     [SetUp]
     public void Setup()
     {
+        torch.set_default_dtype(torch.float64);
+
         _Q1 = new Node(cpt: Helpers.GenerateRandomProbabilityMatrix([2]), name: "Q1", isObserved: true);
         _Q2 = new Node(cpt: Helpers.GenerateRandomProbabilityMatrix([2, 2]), parents: [_Q1], name: "Q2", isObserved: true);
         _Y = new Node(cpt: Helpers.GenerateRandomProbabilityMatrix([2, 2, 2]), parents: [_Q1, _Q2], name: "Y", isObserved: true);

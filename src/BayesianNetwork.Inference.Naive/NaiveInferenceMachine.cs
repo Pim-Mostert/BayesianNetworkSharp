@@ -26,7 +26,7 @@ public class NaiveInferenceMachine : IInferenceMachine
                 ni => ni.Index);
 
         _pPrior = CalculatePPrior();
-        _pEvidence = torch.ones(_pPrior.shape, dtype: torch.float64);
+        _pEvidence = torch.ones(_pPrior.shape);
         _pPosterior = _pPrior;
     }
 

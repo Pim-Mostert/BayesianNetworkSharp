@@ -15,7 +15,7 @@ internal static class Helpers
 
     public static torch.Tensor GenerateRandomProbabilityMatrix(long[] size)
     {
-        var p = torch.rand(size, dtype: torch.float64);
+        var p = torch.rand(size);
 
         return p / p.sum(dim: -1, keepdim: true);
     }

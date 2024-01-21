@@ -13,10 +13,12 @@ public class HandleNumericalUnderflow
     [SetUp]
     public void Setup()
     {
-        _Q = new Node(cpt: torch.tensor(new[] { 0.5, 0.5 }, dtype: torch.float64), name: "Q");
+        torch.set_default_dtype(torch.float64);
+
+        _Q = new Node(cpt: torch.tensor(new[] { 0.5, 0.5 }), name: "Q");
         _Ys = Enumerable.Range(0, 10)
             .Select(i =>
-                new Node(cpt: torch.tensor(new[,] { { 1e-100, 1 - 1e-100 }, { 1 - 1e-100, 1e-100 } }, dtype: torch.float64), parents: [_Q], name: "Y", isObserved: true))
+                new Node(cpt: torch.tensor(new[,] { { 1e-100, 1 - 1e-100 }, { 1 - 1e-100, 1e-100 } }), parents: [_Q], name: "Y", isObserved: true))
             .ToArray();
 
         BayesianNetwork bayesianNetwork = new(nodes: [_Q, .. _Ys]);
