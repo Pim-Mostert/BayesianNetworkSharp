@@ -4,7 +4,7 @@ using static TorchSharp.torch;
 
 namespace BayesianNetwork.Inference.Naive;
 
-public class SingleParents_NoneObserved
+public class NetworkWithSingleParents_NoneObserved
 {
     private Node _Q1;
     private Node _Q2;
