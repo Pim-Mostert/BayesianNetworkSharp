@@ -66,7 +66,7 @@ public class NetworkWithSingleParents_SingleNodeObserved
     }
 
     [Test]
-    public void LogLikelihoodSingleNodeObserved_Correct()
+    public void LogLikelihood_SingleNodeObserved_Correct()
     {
         // Assign
         double expected = torch.log(
