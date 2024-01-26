@@ -12,6 +12,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{D18852CB-D
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BayesianNetwork.Inference.Naive.Test", "test\BayesianNetwork.Inference.Naive.Test\BayesianNetwork.Inference.Naive.Test.csproj", "{C801225E-63ED-4B84-AAE3-B318037F810D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BayesianNetwork.Inference.SumProduct.Test", "test\BayesianNetwork.Inference.SumProduct.Test\BayesianNetwork.Inference.SumProduct.Test.csproj", "{88B9DA65-643E-44DF-BFCE-022A03563943}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{E3091F20-F196-4ACF-B44D-E9AB0C01B922}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BayesianNetwork.Inference.SumProduct", "src\BayesianNetwork.Inference.SumProduct\BayesianNetwork.Inference.SumProduct.csproj", "{EAAE69BE-692F-4D84-8B5D-47149FC1C958}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -37,8 +43,18 @@ Global
 		{C801225E-63ED-4B84-AAE3-B318037F810D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C801225E-63ED-4B84-AAE3-B318037F810D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C801225E-63ED-4B84-AAE3-B318037F810D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{88B9DA65-643E-44DF-BFCE-022A03563943}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{88B9DA65-643E-44DF-BFCE-022A03563943}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{88B9DA65-643E-44DF-BFCE-022A03563943}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{88B9DA65-643E-44DF-BFCE-022A03563943}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EAAE69BE-692F-4D84-8B5D-47149FC1C958}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EAAE69BE-692F-4D84-8B5D-47149FC1C958}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EAAE69BE-692F-4D84-8B5D-47149FC1C958}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EAAE69BE-692F-4D84-8B5D-47149FC1C958}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{C801225E-63ED-4B84-AAE3-B318037F810D} = {D18852CB-DF4D-4FD8-8FDE-DA297068E59E}
+		{88B9DA65-643E-44DF-BFCE-022A03563943} = {D18852CB-DF4D-4FD8-8FDE-DA297068E59E}
+		{EAAE69BE-692F-4D84-8B5D-47149FC1C958} = {E3091F20-F196-4ACF-B44D-E9AB0C01B922}
 	EndGlobalSection
 EndGlobal
