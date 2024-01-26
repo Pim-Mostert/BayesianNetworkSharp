@@ -18,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\BayesianNetwork.Inference.GenericTests\BayesianNetwork.Inference.GenericTests.csproj" />
     <ProjectReference Include="..\..\src\BayesianNetwork.Inference.SumProduct\BayesianNetwork.Inference.SumProduct.csproj" />
   </ItemGroup>
   

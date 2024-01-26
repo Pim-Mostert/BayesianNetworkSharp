@@ -5,6 +5,10 @@ namespace BayesianNetwork.Inference.SumProduct;
 
 public class SumProductInferenceMachine : IInferenceMachine
 {
+    public SumProductInferenceMachine(BayesianNetwork bayesianNetwork)
+    {
+    }
+
     public double LogLikelihood => throw new NotImplementedException();
 
     public void EnterEvidence(Evidence evidence)
