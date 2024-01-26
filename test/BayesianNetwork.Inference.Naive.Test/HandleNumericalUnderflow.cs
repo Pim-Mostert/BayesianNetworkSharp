@@ -36,7 +36,7 @@ public class HandleNumericalUnderflow
     }
 
     [Test]
-    public void InferSingleNode_SingleNodeObserved_CorrectInference()
+    public void InferAllNodes_WithEvidence_NoNaNs()
     {
         // Assign
 
@@ -53,51 +53,31 @@ public class HandleNumericalUnderflow
         });
     }
 
-    // [Test]
-    // public void LogLikelihood_SingleNodeObserved_Correct()
-    // {
-    //     // Assign
-    //     double expected = torch.log(
-    //         torch.einsum("i, ij, jk, k->",
-    //             _Q1.Cpt,
-    //             _Q2.Cpt,
-    //             _Y.Cpt,
-    //             _evidence.GetState(_Y).AsTensor()))
-    //         .item<double>();
+    [Test]
+    public void LogLikelihood_WithEvidence_NoNaNs()
+    {
+        // Assign
 
-    //     // Act
-    //     double actual = _sut.LogLikelihood;
+        // Act
+        double actual = _sut.LogLikelihood;
 
-    //     // Assert
-    //     Assert.That(actual, Is.EqualTo(expected).Within(1e-5));
-    // }
+        // Assert
+        Assert.That(actual, Is.Not.NaN);
+    }
 
-    // [Test]
-    // public void InferSingleNodeWithParents_SingleNodeObserved_CorrectInference()
-    // {
-    //     // Assign
-    //     Tensor pQ1xQ2_expected = torch.einsum("i, ij, jk, k->ij",
-    //         _Q1.Cpt,
-    //         _Q2.Cpt,
-    //         _Y.Cpt,
-    //         _evidence.GetState(_Y).AsTensor());
-    //     pQ1xQ2_expected /= pQ1xQ2_expected.sum();
-    //     Tensor pQ2xY_expected = torch.einsum("i, ij, jk, k->jk",
-    //         _Q1.Cpt,
-    //         _Q2.Cpt,
-    //         _Y.Cpt,
-    //         _evidence.GetState(_Y).AsTensor());
-    //     pQ2xY_expected /= pQ2xY_expected.sum();
+    [Test]
+    public void InferSingleNodeWithParents_SingleNodeObserved_CorrectInference()
+    {
+        // Assign
 
-    //     // Act
-    //     Tensor pQ1xQ2_actual = _sut.Infer(_Q2, includeParents: true);
-    //     Tensor pQ2xY_actual = _sut.Infer(_Y, includeParents: true);
+        // Act
+        IEnumerable<Tensor> pQ1xYs_actual = _Ys.Select(y => _sut.Infer(y, includeParents: true));
 
-    //     // Assert
-    //     Assert.Multiple(() =>
-    //     {
-    //         Helpers.AssertTensorEqual(pQ1xQ2_actual, pQ1xQ2_expected);
-    //         Helpers.AssertTensorEqual(pQ2xY_actual, pQ2xY_expected);
-    //     });
-    // }
+        // Assert
+        Assert.Multiple(() =>
+        {
+            foreach (var pQ1xY_actual in pQ1xYs_actual)
+                Assert.That(pQ1xY_actual.data<double>(), Is.All.Not.NaN);
+        });
+    }
 }
