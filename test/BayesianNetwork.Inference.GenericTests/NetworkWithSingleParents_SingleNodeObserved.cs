@@ -1,9 +1,10 @@
+using BayesianNetwork.Inference.GenericTests.Helpers;
 using TorchSharp;
 using static TorchSharp.torch;
 
-namespace BayesianNetwork.Inference.Naive;
+namespace BayesianNetwork.Inference.GenericTests;
 
-public class NetworkWithSingleParents_AllObserved
+public class NetworkWithSingleParents_SingleNodeObserved
 {
     private Node _Q1, _Q2, _Y;
     private NaiveInferenceMachine _sut;
@@ -12,19 +13,15 @@ public class NetworkWithSingleParents_AllObserved
     [SetUp]
     public void Setup()
     {
-        torch.set_default_dtype(torch.float64);
+        set_default_dtype(float64);
 
-        _Q1 = new Node(cpt: Helpers.GenerateRandomProbabilityMatrix([2]), name: "Q1", isObserved: true);
-        _Q2 = new Node(cpt: Helpers.GenerateRandomProbabilityMatrix([2, 2]), parents: [_Q1], name: "Q2", isObserved: true);
-        _Y = new Node(cpt: Helpers.GenerateRandomProbabilityMatrix([2, 2]), parents: [_Q2], name: "Y", isObserved: true);
+        _Q1 = new Node(cpt: TensorHelpers.GenerateRandomProbabilityMatrix([2]), name: "Q1");
+        _Q2 = new Node(cpt: TensorHelpers.GenerateRandomProbabilityMatrix([2, 2]), parents: [_Q1], name: "Q2");
+        _Y = new Node(cpt: TensorHelpers.GenerateRandomProbabilityMatrix([2, 2]), parents: [_Q2], name: "Y", isObserved: true);
 
         BayesianNetwork bayesianNetwork = new(nodes: [_Q1, _Q2, _Y]);
 
-        _sut = new NaiveInferenceMachine(bayesianNetwork);
-
         _evidence = EvidenceBuilder.For(bayesianNetwork)
-            .SetState(_Q1, new State([1, 0]))
-            .SetState(_Q2, new State([0, 1]))
             .SetState(_Y, new State([1, 0]))
             .Build();
 
@@ -33,31 +30,25 @@ public class NetworkWithSingleParents_AllObserved
     }
 
     [Test]
-    public void InferSingleNode_AllObserved_CorrectInference()
+    public void InferSingleNode_SingleNodeObserved_CorrectInference()
     {
         // Assign
-        Tensor pQ1_expected = torch.einsum("i, ij, jk, i, j, k->i",
+        Tensor pQ1_expected = einsum("i, ij, jk, k->i",
             _Q1.Cpt,
             _Q2.Cpt,
             _Y.Cpt,
-            _evidence.GetState(_Q1).AsTensor(),
-            _evidence.GetState(_Q2).AsTensor(),
             _evidence.GetState(_Y).AsTensor());
         pQ1_expected /= pQ1_expected.sum();
-        Tensor pQ2_expected = torch.einsum("i, ij, jk, i, j, k->j",
+        Tensor pQ2_expected = einsum("i, ij, jk, k->j",
             _Q1.Cpt,
             _Q2.Cpt,
             _Y.Cpt,
-            _evidence.GetState(_Q1).AsTensor(),
-            _evidence.GetState(_Q2).AsTensor(),
             _evidence.GetState(_Y).AsTensor());
         pQ2_expected /= pQ2_expected.sum();
-        Tensor pY_expected = torch.einsum("i, ij, jk, i, j, k->k",
+        Tensor pY_expected = einsum("i, ij, jk, k->k",
             _Q1.Cpt,
             _Q2.Cpt,
             _Y.Cpt,
-            _evidence.GetState(_Q1).AsTensor(),
-            _evidence.GetState(_Q2).AsTensor(),
             _evidence.GetState(_Y).AsTensor());
         pY_expected /= pY_expected.sum();
 
@@ -69,23 +60,21 @@ public class NetworkWithSingleParents_AllObserved
         // Assert
         Assert.Multiple(() =>
         {
-            Helpers.AssertTensorEqual(pQ1_actual, pQ1_expected);
-            Helpers.AssertTensorEqual(pQ2_actual, pQ2_expected);
-            Helpers.AssertTensorEqual(pY_actual, pY_expected);
+            AssertHelpers.AssertTensorEqual(pQ1_actual, pQ1_expected);
+            AssertHelpers.AssertTensorEqual(pQ2_actual, pQ2_expected);
+            AssertHelpers.AssertTensorEqual(pY_actual, pY_expected);
         });
     }
 
     [Test]
-    public void LogLikelihood_AllObserved_Correct()
+    public void LogLikelihood_SingleNodeObserved_Correct()
     {
         // Assign
-        double expected = torch.log(
-            torch.einsum("i, ij, jk, i, j, k->",
+        double expected = log(
+            einsum("i, ij, jk, k->",
                 _Q1.Cpt,
                 _Q2.Cpt,
                 _Y.Cpt,
-                _evidence.GetState(_Q1).AsTensor(),
-                _evidence.GetState(_Q2).AsTensor(),
                 _evidence.GetState(_Y).AsTensor()))
             .item<double>();
 
@@ -97,23 +86,19 @@ public class NetworkWithSingleParents_AllObserved
     }
 
     [Test]
-    public void InferSingleNodeWithParents_AllObserved_CorrectInference()
+    public void InferSingleNodeWithParents_SingleNodeObserved_CorrectInference()
     {
         // Assign
-        Tensor pQ1xQ2_expected = torch.einsum("i, ij, jk, i, j, k->ij",
+        Tensor pQ1xQ2_expected = einsum("i, ij, jk, k->ij",
             _Q1.Cpt,
             _Q2.Cpt,
             _Y.Cpt,
-            _evidence.GetState(_Q1).AsTensor(),
-            _evidence.GetState(_Q2).AsTensor(),
             _evidence.GetState(_Y).AsTensor());
         pQ1xQ2_expected /= pQ1xQ2_expected.sum();
-        Tensor pQ2xY_expected = torch.einsum("i, ij, jk, i, j, k->jk",
+        Tensor pQ2xY_expected = einsum("i, ij, jk, k->jk",
             _Q1.Cpt,
             _Q2.Cpt,
             _Y.Cpt,
-            _evidence.GetState(_Q1).AsTensor(),
-            _evidence.GetState(_Q2).AsTensor(),
             _evidence.GetState(_Y).AsTensor());
         pQ2xY_expected /= pQ2xY_expected.sum();
 
@@ -124,8 +109,8 @@ public class NetworkWithSingleParents_AllObserved
         // Assert
         Assert.Multiple(() =>
         {
-            Helpers.AssertTensorEqual(pQ1xQ2_actual, pQ1xQ2_expected);
-            Helpers.AssertTensorEqual(pQ2xY_actual, pQ2xY_expected);
+            AssertHelpers.AssertTensorEqual(pQ1xQ2_actual, pQ1xQ2_expected);
+            AssertHelpers.AssertTensorEqual(pQ2xY_actual, pQ2xY_expected);
         });
     }
 }

@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\BayesianNetwork.Inference.Naive\BayesianNetwork.Inference.Naive.csproj" />
+    <ProjectReference Include="..\BayesianNetwork.Inference.GenericTests\BayesianNetwork.Inference.GenericTests.csproj" />
   </ItemGroup>
 
 </Project>

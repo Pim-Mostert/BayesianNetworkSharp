@@ -1,7 +1,7 @@
 using TorchSharp;
 using static TorchSharp.torch;
 
-namespace BayesianNetwork.Inference.Naive;
+namespace BayesianNetwork.Inference.GenericTests;
 
 public class HandleNumericalUnderflow
 {
@@ -13,17 +13,15 @@ public class HandleNumericalUnderflow
     [SetUp]
     public void Setup()
     {
-        torch.set_default_dtype(torch.float64);
+        set_default_dtype(float64);
 
-        _Q = new Node(cpt: torch.tensor(new[] { 0.5, 0.5 }), name: "Q");
+        _Q = new Node(cpt: tensor(new[] { 0.5, 0.5 }), name: "Q");
         _Ys = Enumerable.Range(0, 10)
             .Select(i =>
-                new Node(cpt: torch.tensor(new[,] { { 1e-100, 1 - 1e-100 }, { 1 - 1e-100, 1e-100 } }), parents: [_Q], name: "Y", isObserved: true))
+                new Node(cpt: tensor(new[,] { { 1e-100, 1 - 1e-100 }, { 1 - 1e-100, 1e-100 } }), parents: [_Q], name: "Y", isObserved: true))
             .ToArray();
 
         BayesianNetwork bayesianNetwork = new(nodes: [_Q, .. _Ys]);
-
-        _sut = new NaiveInferenceMachine(bayesianNetwork);
 
         EvidenceBuilder evidenceBuilder = EvidenceBuilder.For(bayesianNetwork);
         foreach (var y in _Ys)
