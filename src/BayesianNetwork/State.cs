@@ -2,10 +2,10 @@
 
 namespace BayesianNetwork;
 
-public class State(double[] vector)
+public class State(double[] tensor)
 {
-    private readonly torch.Tensor _vector = torch.tensor(vector);
+    private readonly torch.Tensor _tensor = torch.tensor(tensor);
 
-    public long NumDims => _vector.shape.Single();
-    public torch.Tensor AsTensor() => _vector;
+    public long NumDims => _tensor.shape.Single();
+    public torch.Tensor AsTensor() => _tensor;
 }
