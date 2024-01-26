@@ -1,13 +1,16 @@
+using BayesianNetwork.Inference.Abstractions;
 using BayesianNetwork.Inference.GenericTests.Helpers;
 using static TorchSharp.torch;
 
 namespace BayesianNetwork.Inference.GenericTests;
 
-public class ComplexNetworkWithSingleParents_SomeObserved
+public abstract class ComplexNetworkWithSingleParents_SomeObserved
 {
     private Node _Q1, _Q2, _Q3, _Y1, _Y2, _Y3, _Y4, _Y5;
-    private NaiveInferenceMachine _sut;
+    private IInferenceMachine _sut;
     private Evidence _evidence;
+
+    protected abstract IInferenceMachine InferenceMachineFactory(BayesianNetwork bayesianNetwork);
 
     [SetUp]
     public void Setup()
@@ -33,7 +36,7 @@ public class ComplexNetworkWithSingleParents_SomeObserved
             .SetState(_Y5, new State([1, 1, 0]))
             .Build();
 
-        _sut = new NaiveInferenceMachine(bayesianNetwork);
+        _sut = InferenceMachineFactory(bayesianNetwork);
         _sut.EnterEvidence(_evidence);
     }
 

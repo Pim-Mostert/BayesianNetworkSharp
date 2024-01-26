@@ -3,7 +3,7 @@ using BayesianNetwork.Inference.Abstractions;
 namespace BayesianNetwork.Inference.Naive.Test;
 
 [TestFixture]
-public class ComplexNetworkWithSingleParents_NoneObserved : GenericTests.ComplexNetworkWithSingleParents_NoneObserved
+public class NetworkWithMultipleParents_AllObserved : GenericTests.NetworkWithMultipleParents_AllObserved
 {
     protected override IInferenceMachine InferenceMachineFactory(BayesianNetwork bayesianNetwork)
     {

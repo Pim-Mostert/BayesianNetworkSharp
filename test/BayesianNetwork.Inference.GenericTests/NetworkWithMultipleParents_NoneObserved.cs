@@ -1,13 +1,15 @@
+using BayesianNetwork.Inference.Abstractions;
 using BayesianNetwork.Inference.GenericTests.Helpers;
-using TorchSharp;
 using static TorchSharp.torch;
 
 namespace BayesianNetwork.Inference.GenericTests;
 
-public class NetworkWithMultipleParents_NoneObserved
+public abstract class NetworkWithMultipleParents_NoneObserved
 {
     private Node _Q1, _Q2, _Y;
-    private NaiveInferenceMachine _sut;
+    private IInferenceMachine _sut;
+
+    protected abstract IInferenceMachine InferenceMachineFactory(BayesianNetwork bayesianNetwork);
 
     [SetUp]
     public void Setup()
@@ -20,7 +22,7 @@ public class NetworkWithMultipleParents_NoneObserved
 
         BayesianNetwork bayesianNetwork = new(nodes: [_Q1, _Q2, _Y]);
 
-        _sut = new NaiveInferenceMachine(bayesianNetwork);
+        _sut = InferenceMachineFactory(bayesianNetwork);
     }
 
     [Test]

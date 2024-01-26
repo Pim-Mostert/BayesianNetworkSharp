@@ -1,24 +1,26 @@
+using BayesianNetwork.Inference.Abstractions;
 using TorchSharp;
-using static TorchSharp.torch;
 
 namespace BayesianNetwork.Inference.GenericTests;
 
-public class HandleNumericalUnderflow
+public abstract class HandleNumericalUnderflow
 {
     private Node _Q;
     private Node[] _Ys;
-    private NaiveInferenceMachine _sut;
+    private IInferenceMachine _sut;
     private Evidence _evidence;
+
+    protected abstract IInferenceMachine InferenceMachineFactory(BayesianNetwork bayesianNetwork);
 
     [SetUp]
     public void Setup()
     {
-        set_default_dtype(float64);
+        torch.set_default_dtype(torch.float64);
 
-        _Q = new Node(cpt: tensor(new[] { 0.5, 0.5 }), name: "Q");
+        _Q = new Node(cpt: torch.tensor(new[] { 0.5, 0.5 }), name: "Q");
         _Ys = Enumerable.Range(0, 10)
             .Select(i =>
-                new Node(cpt: tensor(new[,] { { 1e-100, 1 - 1e-100 }, { 1 - 1e-100, 1e-100 } }), parents: [_Q], name: "Y", isObserved: true))
+                new Node(cpt: torch.tensor(new[,] { { 1e-100, 1 - 1e-100 }, { 1 - 1e-100, 1e-100 } }), parents: [_Q], name: "Y", isObserved: true))
             .ToArray();
 
         BayesianNetwork bayesianNetwork = new(nodes: [_Q, .. _Ys]);
@@ -29,7 +31,7 @@ public class HandleNumericalUnderflow
 
         _evidence = evidenceBuilder.Build();
 
-        _sut = new NaiveInferenceMachine(bayesianNetwork);
+        _sut = InferenceMachineFactory(bayesianNetwork);
         _sut.EnterEvidence(_evidence);
     }
 
@@ -39,8 +41,8 @@ public class HandleNumericalUnderflow
         // Assign
 
         // Act
-        Tensor pQ_actual = _sut.Infer(_Q);
-        IEnumerable<Tensor> pYs_actual = _Ys.Select(y => _sut.Infer(y));
+        torch.Tensor pQ_actual = _sut.Infer(_Q);
+        IEnumerable<torch.Tensor> pYs_actual = _Ys.Select(y => _sut.Infer(y));
 
         // Assert
         Assert.Multiple(() =>
@@ -69,7 +71,7 @@ public class HandleNumericalUnderflow
         // Assign
 
         // Act
-        IEnumerable<Tensor> pQ1xYs_actual = _Ys.Select(y => _sut.Infer(y, includeParents: true));
+        IEnumerable<torch.Tensor> pQ1xYs_actual = _Ys.Select(y => _sut.Infer(y, includeParents: true));
 
         // Assert
         Assert.Multiple(() =>
