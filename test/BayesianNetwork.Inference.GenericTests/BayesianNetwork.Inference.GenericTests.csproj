@@ -1,7 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\BayesianNetwork\BayesianNetwork.csproj" />
     <ProjectReference Include="..\..\src\BayesianNetwork.Inference.Abstractions\BayesianNetwork.Inference.Abstractions.csproj" />
   </ItemGroup>
 
