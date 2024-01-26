@@ -18,9 +18,7 @@ public class ComplexNetworkWithSingleParents_NoneObserved
         _Q3 = new Node(cpt: Helpers.GenerateRandomProbabilityMatrix([3, 2]), parents: [_Q2], name: "Q3");
         _Y1 = new Node(cpt: Helpers.GenerateRandomProbabilityMatrix([2, 2]), parents: [_Q1], name: "Y1");
         _Y2 = new Node(cpt: Helpers.GenerateRandomProbabilityMatrix([3, 3]), parents: [_Q2], name: "Y2");
-
-        // oopsie [3, 3] --> [3, 4]
-        _Y3 = new Node(cpt: Helpers.GenerateRandomProbabilityMatrix([3, 3]), parents: [_Q2], name: "Y3");
+        _Y3 = new Node(cpt: Helpers.GenerateRandomProbabilityMatrix([3, 4]), parents: [_Q2], name: "Y3");
         _Y4 = new Node(cpt: Helpers.GenerateRandomProbabilityMatrix([2, 2]), parents: [_Q3], name: "Y4");
         _Y5 = new Node(cpt: Helpers.GenerateRandomProbabilityMatrix([2, 3]), parents: [_Q3], name: "Y5");
 
