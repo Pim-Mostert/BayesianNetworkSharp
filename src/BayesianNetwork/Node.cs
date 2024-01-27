@@ -2,7 +2,7 @@ using BayesianNetwork.Tensors;
 
 namespace BayesianNetwork;
 
-public class Node
+public class Node<T> where T : Tensor
 {
     public Node(Tensor<State> cpt, List<Node>? parents = null, bool isObserved = false, string name = "<unnamed>")
     {
@@ -24,7 +24,7 @@ public class Node
     }
 
     public IReadOnlyList<Node> Parents { get; init; }
-    public Tensor Cpt { get; init; }
+    public Tensor<State> Cpt { get; init; }
     public bool IsObserved { get; init; }
 
     public long NumStates => Cpt.Value.shape.Last();

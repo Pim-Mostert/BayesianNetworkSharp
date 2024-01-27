@@ -109,7 +109,7 @@ public class NaiveInferenceMachine : IInferenceMachine
                 newShape[_nodeIndex[parent]] = parent.NumStates;
             }
 
-            pPrior *= node.Cpt.reshape(newShape);
+            pPrior *= node.Cpt.Value.reshape(newShape);
         }
 
         pPrior /= pPrior.sum();
